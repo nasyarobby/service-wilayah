@@ -18,7 +18,7 @@ server.use(jsend.middleware);
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.queryParser());
 
-server.get("/", function searchByKeyword(req, res, next) {
+server.get("/pajak/wilayah", function searchByKeyword(req, res, next) {
   const dataWilayah = require("./wilayah.json").VW_RG_WILAYAH;
   const keyword = req.query.q || false;
   const page = req.query.page || 1;
