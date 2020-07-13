@@ -20,7 +20,7 @@ server.use(restify.plugins.queryParser());
 
 server.get("/", function searchByKeyword(req, res, next) {
   const dataWilayah = require("./wilayah.json").VW_RG_WILAYAH;
-  const keyword = req.query.q.toUpperCase() || false;
+  const keyword = req.query.q || false;
   const page = req.query.page || 1;
   let result = dataWilayah;
   let startOffset = (page - 1) * DEFAULT_NUM_ROWS;
@@ -28,15 +28,17 @@ server.get("/", function searchByKeyword(req, res, next) {
 
   if (keyword)
     result = dataWilayah.filter((row) => {
+      const _keyword = keyword ? keyword.toUpperCase() : "";
+
       return (
-        row["NM_KELURAHAN"].includes(keyword) ||
-        row["NM_KECAMATAN"].includes(keyword) ||
-        row["NM_DATI2"].includes(keyword) ||
-        row["NM_DATI1"].includes(keyword) ||
+        row["NM_KELURAHAN"].includes(_keyword) ||
+        row["NM_KECAMATAN"].includes(_keyword) ||
+        row["NM_DATI2"].includes(_keyword) ||
+        row["NM_DATI1"].includes(_keyword) ||
         (USE_KEMENDAGRI
           ? row["KD_WIL_KEMENDAGRI"] &&
-            row["KD_WIL_KEMENDAGRI"].includes(keyword)
-          : row["KD_WIL"].includes(keyword))
+            row["KD_WIL_KEMENDAGRI"].includes(_keyword)
+          : row["KD_WIL"].includes(_keyword))
       );
     });
 
