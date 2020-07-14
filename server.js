@@ -18,8 +18,10 @@ server.use(jsend.middleware);
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.queryParser());
 
+const dataWilayah = require("./wilayah.json").VW_RG_WILAYAH;
+const dataKpp = require("./KPP.json").RF_KPP;
+
 server.get("/pajak/wilayah", function searchByKeyword(req, res, next) {
-  const dataWilayah = require("./wilayah.json").VW_RG_WILAYAH;
   const keyword = req.query.q || false;
   const page = req.query.page || 1;
   let result = dataWilayah;
@@ -41,6 +43,17 @@ server.get("/pajak/wilayah", function searchByKeyword(req, res, next) {
           : row["KD_WIL"].includes(_keyword))
       );
     });
+
+  if (result.length) {
+    result = result.map((row) => {
+      const kppFound = dataKpp.filter((kpp) => kpp.RF_KD_KPP == row.KD_KPP);
+      console.log(row.KD_KPP, kppFound);
+      return {
+        ...row,
+        NM_KPP: kppFound && kppFound[0].RF_NM_KPP,
+      };
+    });
+  }
 
   res.jsend.success({
     result: result.slice(startOffset, endOffset),
